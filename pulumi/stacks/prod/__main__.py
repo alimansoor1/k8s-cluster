@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from components.iam import EC2InstanceRoles
 from components.lambda_eip import EipReattachLambda
 from components.network import Network
+from components.nlb import GameNlb
 from components.nodes import ControlPlane, Worker
 from components.security_groups import SecurityGroups
 
@@ -112,8 +113,6 @@ worker = Worker(
 )
 
 # === 7. NLB forwarding UDP traffic to worker ASG ===
-from components.nlb import GameNlb
-
 nlb = GameNlb(
     "valheim-nlb",
     subnet_id=network.public_subnet.id,
