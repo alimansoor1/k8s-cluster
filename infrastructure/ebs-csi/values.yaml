@@ -1,0 +1,26 @@
+# EBS CSI driver — provides EBS PVCs for the Valheim world save volume.
+
+controller:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 40Mi
+
+node:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 40Mi
+
+storageClasses:
+  - name: ebs-gp3
+    annotations:
+      storageclass.kubernetes.io/is-default-class: "true"
+    volumeBindingMode: WaitForFirstConsumer
+    reclaimPolicy: Retain   # don't delete world saves on PVC delete
+    allowVolumeExpansion: true
+    parameters:
+      type: gp3
+      fsType: ext4
+      encrypted: "true"

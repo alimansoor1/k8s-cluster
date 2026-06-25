@@ -1,0 +1,15 @@
+# Copy to .envrc and edit. Then run `direnv allow`.
+# .envrc is gitignored.
+
+export AWS_REGION=ap-southeast-1
+export AWS_PROFILE=valheim-admin
+export PULUMI_BACKEND_URL=s3://your-pulumi-state-bucket
+# Or for local state (single-developer setup): unset the above and use
+# `pulumi login --local`
+
+# Your home/office IP for kubectl + talosctl access (used by Pulumi config)
+export MY_IP=$(curl -s https://checkip.amazonaws.com)/32
+
+# Talos
+export TALOSCONFIG=$PWD/talos/_out/talosconfig
+export KUBECONFIG=$PWD/talos/_out/kubeconfig

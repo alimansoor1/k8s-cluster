@@ -1,0 +1,10 @@
+# Patches applied to all worker nodes.
+
+machine:
+  kubelet:
+    extraArgs:
+      cloud-provider: external
+      rotate-server-certificates: "true"
+  network:
+    kubespan:
+      enabled: false   # not needed for a single-AZ cluster

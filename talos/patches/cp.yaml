@@ -1,0 +1,2 @@
+# Node-specific CP patch (empty by default — add overrides here if needed).
+machine: {}

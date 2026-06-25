@@ -1,0 +1,11 @@
+# Envoy Gateway — routes UDP traffic to the Valheim pod inside the cluster.
+# See https://gateway.envoyproxy.io/docs/
+
+deployment:
+  replicas: 1
+
+config:
+  envoyGateway:
+    logging:
+      level:
+        default: info

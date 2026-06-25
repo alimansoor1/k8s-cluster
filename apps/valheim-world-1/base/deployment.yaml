@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: valheim-world-1
+  namespace: valheim
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate   # only one pod owns the world file at a time
+  selector:
+    matchLabels:
+      app: valheim-world-1
+  template:
+    metadata:
+      labels:
+        app: valheim-world-1
+    spec:
+      serviceAccountName: valheim-world-1
+      nodeSelector:
+        workload: valheim
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: valheim
+          image: lloesche/valheim-server:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: game
+              containerPort: 2456
+              protocol: UDP
+            - name: game-1
+              containerPort: 2457
+              protocol: UDP
+            - name: game-2
+              containerPort: 2458
+              protocol: UDP
+          env:
+            - name: SERVER_NAME
+              value: "valheim-world-1"
+            - name: WORLD_NAME
+              value: "Yggdrasil"
+            - name: SERVER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: valheim-server-pass
+                  key: password
+            - name: SERVER_PUBLIC
+              value: "false"
+            - name: TZ
+              value: "Asia/Manila"
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1.5Gi
+            limits:
+              cpu: 1500m
+              memory: 2.5Gi
+          volumeMounts:
+            - name: world-data
+              mountPath: /config
+          livenessProbe:
+            tcpSocket:
+              port: 2456
+            initialDelaySeconds: 300
+            periodSeconds: 30
+          readinessProbe:
+            tcpSocket:
+              port: 2456
+            initialDelaySeconds: 120
+            periodSeconds: 10
+      volumes:
+        - name: world-data
+          persistentVolumeClaim:
+            claimName: valheim-world-1

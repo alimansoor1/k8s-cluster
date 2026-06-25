@@ -1,0 +1,30 @@
+# Root Application — points to argocd/apps/ which contains child Applications.
+# Apply this once: kubectl apply -f argocd/apps/root.yaml
+# After that, Argo CD manages itself + everything else.
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    # Replace with your fork's URL after pushing to GitHub
+    repoURL: https://github.com/alimansoor1/k8s-cluster.git
+    targetRevision: main
+    path: argocd/apps
+    directory:
+      recurse: false
+      include: '{infrastructure.yaml,valheim.yaml,projects.yaml}'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

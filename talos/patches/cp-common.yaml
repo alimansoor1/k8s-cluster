@@ -1,0 +1,25 @@
+# Patches applied to all control plane nodes.
+
+cluster:
+  apiServer:
+    certSANs:
+      - REPLACE_WITH_CP_EIP   # so the cert is valid for kubectl access via EIP
+  proxy:
+    disabled: true            # Cilium will replace kube-proxy
+  network:
+    cni:
+      name: none
+
+machine:
+  features:
+    kubernetesTalosAPIAccess:
+      enabled: true
+      allowedRoles:
+        - os:reader
+      allowedKubernetesNamespaces:
+        - kube-system
+        - argocd
+  kubelet:
+    extraArgs:
+      cloud-provider: external
+      rotate-server-certificates: "true"

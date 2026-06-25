@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+commonAnnotations:
+  managed-by: argocd
+  environment: prod
+
+# Server password lives in a SealedSecret or external-secrets — for now this
+# is a placeholder Secret you must create out-of-band:
+#   kubectl -n valheim create secret generic valheim-server-pass \
+#     --from-literal=password=YourStrongPasswordHere
+#
+# DO NOT commit the actual secret value to git.

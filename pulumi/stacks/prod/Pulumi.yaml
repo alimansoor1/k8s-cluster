@@ -1,0 +1,8 @@
+name: valheim-infra
+description: Valheim Talos K8s cluster on AWS
+runtime:
+  name: python
+  options:
+    toolchain: uv
+config:
+  aws:region: ap-southeast-1

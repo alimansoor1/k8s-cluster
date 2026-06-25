@@ -1,0 +1,56 @@
+# Pulumi
+**/.pulumi/
+**/Pulumi.*.yaml.bak
+**/pulumi-debug.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.uv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Talos — generated machine configs CONTAIN SECRETS, never commit
+talos/_out/
+talos/secrets/
+talos/controlplane.yaml
+talos/worker.yaml
+talos/talosconfig
+
+# kubeconfig — contains credentials
+kubeconfig
+*.kubeconfig
+
+# Argo CD
+argocd-initial-password.txt
+
+# Helm
+charts/*.tgz
+
+# Editor / OS
+.DS_Store
+*.swp
+*.swo
+.vscode/
+.idea/
+*.bak
+
+# Secrets — generic catch-all
+*.pem
+*.key
+secrets/
+.env
+.env.*
+!.env.example
+
+# direnv
+.envrc
+!.envrc.example

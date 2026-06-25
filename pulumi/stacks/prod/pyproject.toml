@@ -1,0 +1,29 @@
+[project]
+name = "valheim-infra"
+version = "0.1.0"
+description = "AWS infrastructure for Valheim Talos K8s cluster"
+requires-python = ">=3.11"
+dependencies = [
+    "pulumi>=3.130.0",
+    "pulumi-aws>=6.50.0",
+    "pulumi-aws-native>=1.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.6.0",
+    "pyright>=1.1.380",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
+ignore = ["E501"]  # line length handled by formatter
+
+[tool.pyright]
+include = ["."]
+pythonVersion = "3.11"
+typeCheckingMode = "standard"

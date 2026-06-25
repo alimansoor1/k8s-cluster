@@ -1,0 +1,53 @@
+# Infrastructure ApplicationSet — installs cluster-level Helm releases.
+# Cilium and Argo CD itself are bootstrapped out-of-band (see scripts/cluster-bootstrap.sh).
+
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: infrastructure
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - name: envoy-gateway
+            namespace: envoy-gateway-system
+            chart: gateway-helm
+            repoURL: https://docs.cilium.io/projectcontour/  # placeholder
+            version: v0.0.0
+            valuesPath: infrastructure/envoy-gateway/values.yaml
+          - name: ebs-csi-driver
+            namespace: kube-system
+            chart: aws-ebs-csi-driver
+            repoURL: https://kubernetes-sigs.github.io/aws-ebs-csi-driver
+            version: 2.35.0
+            valuesPath: infrastructure/ebs-csi/values.yaml
+  template:
+    metadata:
+      name: '{{name}}'
+      namespace: argocd
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: valheim
+      source:
+        repoURL: '{{repoURL}}'
+        targetRevision: '{{version}}'
+        chart: '{{chart}}'
+        helm:
+          valueFiles:
+            - $values/{{valuesPath}}
+      sources:
+        - repoURL: https://github.com/alimansoor1/k8s-cluster.git
+          targetRevision: main
+          ref: values
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
