@@ -44,9 +44,13 @@ def _find_eip() -> str:
     )
     addrs = resp.get("Addresses", [])
     if not addrs:
-        raise RuntimeError(f"No EIP found with tags Project={PROJECT_TAG} Role={ROLE_TAG}")
+        raise RuntimeError(
+            f"No EIP found with tags Project={PROJECT_TAG} Role={ROLE_TAG}"
+        )
     if len(addrs) > 1:
-        raise RuntimeError(f"Multiple EIPs found, expected one: {[a['AllocationId'] for a in addrs]}")
+        raise RuntimeError(
+            f"Multiple EIPs found, expected one: {[a['AllocationId'] for a in addrs]}"
+        )
     return addrs[0]["AllocationId"]
 
 
@@ -60,7 +64,9 @@ def _wait_running(instance_id: str) -> None:
         if state == "running":
             return
         time.sleep(10)
-    raise TimeoutError(f"Instance {instance_id} did not reach running within {WAIT_SECONDS}s")
+    raise TimeoutError(
+        f"Instance {instance_id} did not reach running within {WAIT_SECONDS}s"
+    )
 
 
 def lambda_handler(event: dict[str, Any], context: object) -> dict[str, Any]:

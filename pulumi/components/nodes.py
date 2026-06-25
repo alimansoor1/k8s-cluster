@@ -22,7 +22,12 @@ def _userdata_for(role: str, extra_vars: dict[str, str] | None = None) -> str:
     location) and applies it via talosctl. See talos/scripts/userdata-*.sh for
     the actual contents.
     """
-    path = Path(__file__).resolve().parents[2] / "talos" / "scripts" / f"userdata-{role}.sh"
+    path = (
+        Path(__file__).resolve().parents[2]
+        / "talos"
+        / "scripts"
+        / f"userdata-{role}.sh"
+    )
     if not path.exists():
         # Fallback: emit a minimal placeholder so Pulumi doesn't fail at preview
         # time. Replace with real talos config fetch before applying.
