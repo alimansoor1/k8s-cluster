@@ -61,3 +61,6 @@ apps/valheim/base/secret.yaml
 *.secret.yaml
 pulumi/stacks/prod/Pulumi.prod.yaml
 talos/talconfig.yaml
+talos/clusterconfig/
+talos/clusterconfig/
+pulumi/stacks/prod/.venv/

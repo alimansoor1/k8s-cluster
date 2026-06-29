@@ -24,7 +24,7 @@ The reasoning behind each major choice. Read this before changing anything subst
 
 **Chosen over:** EKS, k3s, kubeadm.
 
-**Why not EKS:** EKS control plane costs $0.10/hr = $72/month even when idle. For a personal cluster this dominates the bill. Talos's control plane runs on a t3.medium at $0.046/hr = ~$33/month, and you can stop it when not playing.
+**Why not EKS:** EKS control plane costs $0.10/hr = $72/month even when idle. For a personal cluster this dominates the bill. Talos's control plane runs on a `INSTANCE_TYPE` at $0.046/hr = ~$33/month, and you can stop it when not playing.
 
 **Why not k3s:** k3s is fine, but Talos's security model is stricter and you wanted to learn it.
 
@@ -70,7 +70,7 @@ The reasoning behind each major choice. Read this before changing anything subst
 
 **Why not worker:** The worker is unreachable from the internet directly. The NLB resolves the worker's current ENI IP via its target group; no EIP needed.
 
-## Single AZ (ap-southeast-1a)
+## Single AZ (`AWS_AZ`)
 
 **Why:** EBS volumes are AZ-scoped. Multi-AZ implies either replicated storage (not practical for Valheim's save format) or a complex restore-in-another-AZ procedure. For a personal cluster, single-AZ is the right call.
 
@@ -78,7 +78,7 @@ The reasoning behind each major choice. Read this before changing anything subst
 
 **Why Argo CD:** UI is better for someone learning K8s. Flux's CLI-first model is great for teams, but a UI helps you see what's syncing and why.
 
-**Tradeoff:** Argo CD's resource footprint is slightly larger (~400 MB RAM total across its pods vs ~150 MB for Flux). On a t3.medium worker, this is fine.
+**Tradeoff:** Argo CD's resource footprint is slightly larger (~400 MB RAM total across its pods vs ~150 MB for Flux). On a `INSTANCE_TYPE` worker, this is fine.
 
 ## Helm + Kustomize (not pure Helm or pure Kustomize)
 

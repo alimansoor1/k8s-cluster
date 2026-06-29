@@ -85,7 +85,7 @@ Cilium Hubble is installed (`hubble.enabled: true`) but the UI is disabled. Enab
 
 **Status:** Intentional.
 
-The entire cluster lives in `ap-southeast-1a`. If AWS loses that AZ, the cluster is down until the AZ recovers.
+The entire cluster lives in ``AWS_AZ``. If AWS loses that AZ, the cluster is down until the AZ recovers.
 
 **Why:** Multi-AZ requires multi-AZ EBS (impossible — EBS is AZ-scoped), so either a distributed filesystem (EFS, complex with Valheim's flat file format) or accepting that "DR" means restoring from a snapshot in another AZ. For a personal game server, single-AZ is correct.
 

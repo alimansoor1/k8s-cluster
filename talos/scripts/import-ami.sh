@@ -2,11 +2,11 @@
 # Download a Talos AWS AMI and import it into your account as a private AMI.
 #
 # Talos publishes per-region AMI IDs at https://factory.talos.dev/.
-# For ap-southeast-1, easiest path is to use the official Talos image factory:
+# For `AWS_REGION`, easiest path is to use the official Talos image factory:
 #
 #   1. Visit https://factory.talos.dev/
 #   2. Pick AWS / amd64 / your desired version
-#   3. Copy the AMI ID for ap-southeast-1
+#   3. Copy the AMI ID for `AWS_REGION`
 #   4. Run: pulumi config set talos_ami_id <ami-id>
 #
 # This script is here for completeness if you want to roll a custom AMI.
@@ -14,7 +14,7 @@
 set -euo pipefail
 
 TALOS_VERSION="${TALOS_VERSION:-v1.8.2}"
-REGION="${AWS_REGION:-ap-southeast-1}"
+REGION="${AWS_REGION:-`AWS_REGION`}"
 BUCKET="${BUCKET:-}"   # set to an S3 bucket you own
 
 if [[ -z "${BUCKET}" ]]; then
