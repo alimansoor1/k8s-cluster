@@ -59,3 +59,4 @@ talos/clusterconfig/
 talos/console.log
 apps/valheim/base/secret.yaml
 *.secret.yaml
+pulumi/stacks/prod/Pulumi.prod.yaml

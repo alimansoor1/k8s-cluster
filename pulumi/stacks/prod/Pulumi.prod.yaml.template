@@ -1,0 +1,22 @@
+config:
+  aws:region: AWS_REGION_HERE
+  valheim-infra:project_name: valheim
+  valheim-infra:env: prod
+  valheim-infra:az: AWS_AZ_HERE
+  # Replace with your home IP / VPN egress IP (CIDR, e.g. "1.2.3.4/32")
+  # NEVER commit a wide CIDR like 0.0.0.0/0 here.
+  valheim-infra:admin_cidr: "ADMIN_IP_HERE/32"
+  # CIDR ranges
+  valheim-infra:vpc_cidr: VPC_CIDR_HERE
+  valheim-infra:public_subnet_cidr: PUBLIC_SUBNET_CIDR_HERE
+  valheim-infra:private_subnet_cidr: PRIVATE_SUBNET_CIDR_HERE
+  # Instance sizing
+  valheim-infra:cp_instance_type: INSTANCE_TYPE_HERE
+  valheim-infra:worker_instance_type: INSTANCE_TYPE_HERE
+  # Talos AMI — see talos/scripts/import-ami.sh to publish your own private AMI
+  # then put the AMI ID here. Region must match aws:region.
+  valheim-infra:talos_ami_id: "AMI_ID_HERE"
+  # Game ports
+  valheim-infra:valheim_udp_start: "GAME_UDP_START_HERE"
+  valheim-infra:valheim_udp_end: "GAME_UDP_END_HERE"
+encryptionsalt: v1:V9zhZ/Vgwt4=:v1:NWHoztDT0wgk9h9o:ortWuoKeTq8o1RrsWxYGFx1QRCqutw==
