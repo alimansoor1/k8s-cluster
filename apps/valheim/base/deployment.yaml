@@ -20,7 +20,7 @@ spec:
         workload: valheim
       containers:
       - name: valheim
-        image: ghcr.io/lloesche/valheim-plus:latest
+        image: ghcr.io/lloesche/valheim-plus:v0.9.15
         ports:
         - containerPort: 2456
           name: game-udp
