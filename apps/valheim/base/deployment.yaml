@@ -1,0 +1,71 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: valheim-server
+  namespace: valheim
+  labels:
+    app: valheim
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: valheim
+  template:
+    metadata:
+      labels:
+        app: valheim
+    spec:
+      nodeSelector:
+        workload: valheim
+      containers:
+      - name: valheim
+        image: ghcr.io/lloesche/valheim-plus:latest
+        ports:
+        - containerPort: 2456
+          name: game-udp
+          protocol: UDP
+        - containerPort: 2457
+          name: query-udp
+          protocol: UDP
+        - containerPort: 2458
+          name: query-tcp
+          protocol: TCP
+        env:
+        - name: SERVER_NAME
+          value: Valheim AWS
+        - name: WORLD_NAME
+          value: ValheimWorld
+        - name: SERVER_PASS
+          valueFrom:
+            secretKeyRef:
+              name: valheim-secrets
+              key: server-password
+        - name: SERVER_PUBLIC
+          value: "true"
+        - name: UPDATE_INTERVAL
+          value: "10800"
+        - name: BACKUPS_INTERVAL
+          value: "3600"
+        - name: BACKUPS_DIRECTORY
+          value: /config/backups
+        - name: BACKUPS_MAX_AGE
+          value: "3"
+        - name: BACKUPS_MAX_COUNT
+          value: "0"
+        - name: BEPINEX
+          value: "true"
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        resources:
+          requests:
+            memory: 4Gi
+            cpu: "2"
+          limits:
+            memory: 8Gi
+            cpu: "4"
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: valheim-config

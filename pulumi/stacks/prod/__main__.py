@@ -14,6 +14,7 @@ from components.lambda_eip import EipReattachLambda
 from components.network import Network
 from components.nodes import ControlPlane, Worker
 from components.security_groups import SecurityGroups
+from components.nlb import GameNlb
 
 config = pulumi.Config()
 
@@ -104,15 +105,16 @@ worker = Worker(
 # to the imports at the top when AWS Support enables ELBv2,
 # then run: pulumi up --yes
 #
-# nlb = GameNlb(
-#     "valheim-nlb",
-#     subnet_id=network.public_subnet.id,
-#     vpc_id=network.vpc.id,
-#     udp_start=UDP_START,
-#     udp_end=UDP_END,
-#     worker_asg_arn=worker.asg.arn,
-#     tags=tags,
-# )
+nlb = GameNlb(
+    "valheim-nlb",
+    subnet_id=network.public_subnet.id,
+    vpc_id=network.vpc.id,
+    udp_start=UDP_START,
+    udp_end=UDP_END,
+    worker_asg_arn=worker.asg.arn,
+    tags=tags,
+)
+
 
 # === Outputs ===
 pulumi.export("vpc_id", network.vpc.id)
@@ -121,5 +123,5 @@ pulumi.export("private_subnet_id", network.private_subnet.id)
 pulumi.export("cp_eip_public_ip", control_plane.eip.public_ip)
 pulumi.export("cp_asg_name", control_plane.asg.name)
 pulumi.export("worker_asg_name", worker.asg.name)
-# pulumi.export("nlb_dns_name", nlb.lb.dns_name)
-# pulumi.export("nlb_arn", nlb.lb.arn)
+pulumi.export("nlb_dns_name", nlb.lb.dns_name)
+pulumi.export("nlb_arn", nlb.lb.arn)
