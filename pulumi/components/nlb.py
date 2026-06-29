@@ -30,7 +30,7 @@ class GameNlb(pulumi.ComponentResource):
             opts=pulumi.ResourceOptions(parent=self),
         )
 
-        # One target group per UDP port — NLB UDP listeners are single-port,
+        # One target group per UDP port - NLB UDP listeners are single-port,
         # so we register a TG and listener per game port.
         self.target_groups: list[aws.lb.TargetGroup] = []
         self.listeners: list[aws.lb.Listener] = []
@@ -43,7 +43,7 @@ class GameNlb(pulumi.ComponentResource):
                 target_type="instance",
                 health_check=aws.lb.TargetGroupHealthCheckArgs(
                     protocol="TCP",
-                    port="10250",  # kubelet — proxy for "is the node up"
+                    port="10250",  # kubelet - proxy for "is the node up"
                     healthy_threshold=2,
                     unhealthy_threshold=2,
                     interval=30,

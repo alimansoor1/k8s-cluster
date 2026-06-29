@@ -1,15 +1,4 @@
-"""Valheim K8s infrastructure on AWS.
-
-Orchestrates:
-  - VPC with public + private subnets, IGW, NAT GW
-  - Security groups (CP, worker, NLB)
-  - EIP for the Control Plane
-  - Launch Templates baking Talos userdata
-  - ASGs (min=1 max=1 desired=1) for self-healing
-  - NLB forwarding UDP 2456-2458 to the worker ASG
-  - IAM roles for EC2 + the EIP re-attach Lambda
-  - EIP re-attach Lambda triggered by ASG lifecycle hook
-"""
+"""Valheim K8s infrastructure on AWS."""
 
 from __future__ import annotations
 
@@ -18,13 +7,11 @@ from pathlib import Path
 
 import pulumi
 
-# Make ../../components importable
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from components.iam import EC2InstanceRoles
 from components.lambda_eip import EipReattachLambda
 from components.network import Network
-from components.nlb import GameNlb
 from components.nodes import ControlPlane, Worker
 from components.security_groups import SecurityGroups
 
@@ -47,7 +34,9 @@ UDP_START = int(config.require("valheim_udp_start"))
 UDP_END = int(config.require("valheim_udp_end"))
 
 if ADMIN_CIDR.startswith("REPLACE_ME"):
-    raise pulumi.RunError("admin_cidr is not set. Run: pulumi config set admin_cidr <your-ip>/32")
+    raise pulumi.RunError(
+        "admin_cidr is not set. Run: pulumi config set admin_cidr <your-ip>/32"
+    )
 if TALOS_AMI.startswith("REPLACE_ME"):
     raise pulumi.RunError(
         "talos_ami_id is not set. See talos/scripts/import-ami.sh, then run: "
@@ -110,16 +99,20 @@ worker = Worker(
     tags=tags,
 )
 
-# === 7. NLB forwarding UDP traffic to worker ASG ===
-nlb = GameNlb(
-    "valheim-nlb",
-    subnet_id=network.public_subnet.id,
-    vpc_id=network.vpc.id,
-    udp_start=UDP_START,
-    udp_end=UDP_END,
-    worker_asg_arn=worker.asg.arn,
-    tags=tags,
-)
+# === 7. NLB - DISABLED until AWS enables ELBv2 ===
+# Uncomment this section and add "from components.nlb import GameNlb"
+# to the imports at the top when AWS Support enables ELBv2,
+# then run: pulumi up --yes
+#
+# nlb = GameNlb(
+#     "valheim-nlb",
+#     subnet_id=network.public_subnet.id,
+#     vpc_id=network.vpc.id,
+#     udp_start=UDP_START,
+#     udp_end=UDP_END,
+#     worker_asg_arn=worker.asg.arn,
+#     tags=tags,
+# )
 
 # === Outputs ===
 pulumi.export("vpc_id", network.vpc.id)
@@ -128,5 +121,5 @@ pulumi.export("private_subnet_id", network.private_subnet.id)
 pulumi.export("cp_eip_public_ip", control_plane.eip.public_ip)
 pulumi.export("cp_asg_name", control_plane.asg.name)
 pulumi.export("worker_asg_name", worker.asg.name)
-pulumi.export("nlb_dns_name", nlb.lb.dns_name)
-pulumi.export("nlb_arn", nlb.lb.arn)
+# pulumi.export("nlb_dns_name", nlb.lb.dns_name)
+# pulumi.export("nlb_arn", nlb.lb.arn)

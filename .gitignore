@@ -54,3 +54,6 @@ secrets/
 # direnv
 .envrc
 !.envrc.example
+kubeconfig
+talos/clusterconfig/
+talos/console.log

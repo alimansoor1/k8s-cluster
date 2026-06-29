@@ -85,7 +85,7 @@ class EC2InstanceRoles(pulumi.ComponentResource):
             policy=node_policy_doc.json,
             opts=pulumi.ResourceOptions(parent=self),
         )
-        # SSM allows nothing beyond what we explicitly grant — useful for break-glass
+        # SSM allows nothing beyond what we explicitly grant - useful for break-glass
         aws.iam.RolePolicyAttachment(
             f"{name}-cp-ssm",
             role=self.cp_role.name,

@@ -28,10 +28,10 @@ class SecurityGroups(pulumi.ComponentResource):
     ) -> None:
         super().__init__("valheim:network:SecurityGroups", name, None, opts)
 
-        # NLB SG — receives UDP from the world, forwards to worker
+        # NLB SG - receives UDP from the world, forwards to worker
         self.nlb = aws.ec2.SecurityGroup(
             f"{name}-nlb",
-            description="Valheim NLB — public UDP ingress",
+            description="Valheim NLB - public UDP ingress",
             vpc_id=vpc_id,
             ingress=[
                 aws.ec2.SecurityGroupIngressArgs(
@@ -54,7 +54,7 @@ class SecurityGroups(pulumi.ComponentResource):
             opts=pulumi.ResourceOptions(parent=self),
         )
 
-        # CP SG — kubectl + talosctl from admin only; no SSH
+        # CP SG - kubectl + talosctl from admin only; no SSH
         self.cp = aws.ec2.SecurityGroup(
             f"{name}-cp",
             description="Talos Control Plane",
@@ -93,7 +93,7 @@ class SecurityGroups(pulumi.ComponentResource):
         # - All egress (Talos pulls images, joins cluster, etc.)
         self.worker = aws.ec2.SecurityGroup(
             f"{name}-worker",
-            description="Talos worker — private",
+            description="Talos worker - private",
             vpc_id=vpc_id,
             egress=[
                 aws.ec2.SecurityGroupEgressArgs(

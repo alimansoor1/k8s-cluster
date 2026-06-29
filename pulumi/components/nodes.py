@@ -1,4 +1,4 @@
-"""Control Plane and Worker — each a Launch Template + ASG.
+"""Control Plane and Worker - each a Launch Template + ASG.
 
 Both ASGs run with min=1 max=1 desired=1 for self-healing only.
 The CP ASG has a lifecycle hook + EIP re-attach Lambda.
@@ -72,7 +72,6 @@ class ControlPlane(pulumi.ComponentResource):
                 name=instance_profile_name,
             ),
             vpc_security_group_ids=security_group_ids,
-            user_data=_userdata_for("cp"),
             metadata_options=aws.ec2.LaunchTemplateMetadataOptionsArgs(
                 http_endpoint="enabled",
                 http_tokens="required",  # IMDSv2 only
@@ -175,10 +174,6 @@ class Worker(pulumi.ComponentResource):
                 name=instance_profile_name,
             ),
             vpc_security_group_ids=security_group_ids,
-            # Worker userdata receives CP endpoint via __CP_ENDPOINT__ substitution
-            user_data=cp_endpoint.apply(
-                lambda ep: _userdata_for("worker", {"CP_ENDPOINT": ep})
-            ),
             metadata_options=aws.ec2.LaunchTemplateMetadataOptionsArgs(
                 http_endpoint="enabled",
                 http_tokens="required",
