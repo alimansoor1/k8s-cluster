@@ -2,7 +2,7 @@
 
 ## Overview
 
-Self-hosted Valheim server on a 2-node Talos Linux Kubernetes cluster in AWS Singapore (`ap-southeast-1`).
+Self-hosted Valheim server on a 2-node Talos Linux Kubernetes cluster in AWS `<AWS_REGION>`.
 
 ## Network topology
 
@@ -11,7 +11,7 @@ Self-hosted Valheim server on a 2-node Talos Linux Kubernetes cluster in AWS Sin
                        │
                        ▼
               ┌────────────────┐
-              │   AWS NLB      │  UDP 2456-2458 (public subnet)
+              │   AWS NLB      │  UDP `<GAME_UDP_PORTS>` (public subnet)
               │   (public IP)  │
               └────────┬───────┘
                        │ VPC internal routing (cross-subnet)
@@ -20,7 +20,7 @@ Self-hosted Valheim server on a 2-node Talos Linux Kubernetes cluster in AWS Sin
         │              AWS VPC                     │
         │ ┌─────────────────┐  ┌────────────────┐  │
         │ │ PUBLIC subnet   │  │ PRIVATE subnet │  │
-        │ │ 10.0.1.0/24     │  │ 10.0.2.0/24    │  │
+        │ │ `PUBLIC_SUBNET_CIDR`     │  │ `PRIVATE_SUBNET_CIDR`    │  │
         │ │                 │  │                │  │
         │ │ ┌─────────────┐ │  │ ┌────────────┐ │  │
         │ │ │ Control     │ │  │ │  Worker    │ │  │
@@ -48,7 +48,7 @@ Self-hosted Valheim server on a 2-node Talos Linux Kubernetes cluster in AWS Sin
 
 | Decision | Rationale |
 |---|---|
-| Single AZ (`ap-southeast-1a`) | Personal cluster, no HA needed; EBS volumes are AZ-scoped anyway |
+| Single AZ (`AWS_AZ`) | Personal cluster, no HA needed; EBS volumes are AZ-scoped anyway |
 | Talos Linux on both nodes | Immutable, no SSH, API-only — significantly smaller attack surface than Ubuntu |
 | Cilium CNI + kube-proxy replacement | eBPF dataplane, better observability, modern K8s standard |
 | Envoy Gateway (in-cluster) | UDP routing inside K8s; sits between NLB and the Valheim pod |
@@ -58,7 +58,7 @@ Self-hosted Valheim server on a 2-node Talos Linux Kubernetes cluster in AWS Sin
 | ASG min=1 max=1 | Self-healing only (not horizontal scaling) — Valheim doesn't shard |
 | Argo CD GitOps | All K8s manifests reconcile from this repo automatically |
 | EBS gp3, retain policy | World saves persist even if PVC is deleted accidentally |
-| t3.medium x2 | Small enough for personal use, large enough for Valheim + system pods |
+| `INSTANCE_TYPE` x2 | Small enough for personal use, large enough for Valheim + system pods |
 
 ## Self-healing mechanism
 
@@ -74,8 +74,8 @@ Self-hosted Valheim server on a 2-node Talos Linux Kubernetes cluster in AWS Sin
 
 | Component | Hourly (24/7) | Notes |
 |---|---|---|
-| CP t3.medium | ~$0.0464/hr | $33/month if always on |
-| Worker t3.medium | ~$0.0464/hr | Stop with `just down` when not playing |
+| CP `INSTANCE_TYPE` | ~$0.0464/hr | $33/month if always on |
+| Worker `INSTANCE_TYPE` | ~$0.0464/hr | Stop with `just down` when not playing |
 | NLB | ~$0.0225/hr + LCU | ~$16/month continuous |
 | NAT GW | ~$0.045/hr + data | ~$32/month — biggest single cost |
 | EBS gp3 8 GiB | ~$0.0011/hr | <$1/month |
