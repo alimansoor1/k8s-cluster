@@ -1,12 +1,12 @@
 # k8s-cluster — Valheim on Talos + Kubernetes
 
-Self-hosted Valheim game server on a 2-node Talos Linux Kubernetes cluster in AWS `ap-southeast-1` (Singapore).
+Self-hosted Valheim game server on a 2-node Talos Linux Kubernetes cluster in AWS `<AWS_REGION>`.
 
 ## Architecture
 
-- **Control Plane** — t3.medium, public subnet, EIP, kube-apiserver/etcd/scheduler/controller-manager
-- **Worker** — t3.medium, private subnet (no public IP), runs Valheim World 1 + Envoy Gateway + Cilium + system pods
-- **NLB** — public, forwards UDP 2456-2458 to worker via VPC internal routing
+- **Control Plane** — `<INSTANCE_TYPE>`, public subnet, EIP, kube-apiserver/etcd/scheduler/controller-manager
+- **Worker** — `<INSTANCE_TYPE>`, private subnet (no public IP), runs Valheim World 1 + Envoy Gateway + Cilium + system pods
+- **NLB** — public, forwards UDP `<GAME_UDP_PORTS>` to worker via VPC internal routing
 - **ASG** — `min=1 max=1 desired=1` on both nodes for self-healing (not horizontal scaling)
 - **GitOps** — Argo CD watches this repo and syncs all Kubernetes manifests
 - **OS** — Talos Linux (immutable, API-only, no SSH) on both nodes
