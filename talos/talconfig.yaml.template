@@ -1,0 +1,51 @@
+# talhelper config — generates Talos machine configs.
+# Run: talhelper genconfig
+#
+# Generated files go to talos/_out/ (gitignored, contains secrets).
+# Edit `clusterEndpoint` to your CP EIP after `pulumi up` succeeds.
+
+clusterName: valheim
+talosVersion: v1.13.5
+kubernetesVersion: 1.31.0
+
+# Set this to https://<CP_EIP>:6443 after Pulumi has assigned the EIP.
+# You can do this in two steps:
+#   1. Run `pulumi up` to allocate the EIP
+#   2. `pulumi stack output cp_eip_public_ip` → put it here → `talhelper genconfig`
+endpoint: https://CP_EIP_HERE:6443
+
+cniConfig:
+  name: flannel  # we install Cilium ourselves
+
+allowSchedulingOnControlPlanes: false
+
+# Optional: enable kube-proxy replacement by Cilium (recommended)
+# See infrastructure/cilium/values.yaml
+
+nodes:
+  - hostname: cp-1
+    ipAddress: CP_PRIVATE_IP_HERE           # placeholder — Talos will use DHCP
+    installDisk: /dev/nvme0n1
+    controlPlane: true
+    nodeLabels:
+      topology.kubernetes.io/zone: AWS_AZ_HERE
+    patches:
+      - "@./patches/cp.yaml"
+
+  - hostname: worker-1
+    ipAddress: WORKER_PRIVATE_IP_HERE
+    installDisk: /dev/nvme0n1
+    controlPlane: false
+    nodeLabels:
+      topology.kubernetes.io/zone: AWS_AZ_HERE
+      workload: valheim
+    patches:
+      - "@./patches/worker.yaml"
+
+controlPlane:
+  patches:
+    - "@./patches/cp-common.yaml"
+
+worker:
+  patches:
+    - "@./patches/worker-common.yaml"
