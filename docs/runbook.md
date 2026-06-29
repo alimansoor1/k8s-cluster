@@ -26,19 +26,19 @@ direnv allow
 ```
 
 Set:
-- `AWS_REGION=ap-southeast-1`
+- `AWS_REGION=<AWS_REGION>`
 - `AWS_PROFILE` to your admin profile
 - `MY_IP` to your home/office IP (automatically detected by default)
 
 ### Step 3 — Get a Talos AMI
 
-Easiest: visit https://factory.talos.dev/ → AWS / amd64 → copy the AMI ID for `ap-southeast-1`.
+Easiest: visit https://factory.talos.dev/ → AWS / amd64 → copy the AMI ID for <AWS_REGION>.
 
 Then:
 
 ```bash
 cd pulumi/stacks/prod
-pulumi config set talos_ami_id ami-xxxxxxxx
+pulumi config set talos_ami_id AMI_ID_HERE
 pulumi config set admin_cidr "$(curl -s https://checkip.amazonaws.com)/32"
 ```
 
@@ -129,7 +129,7 @@ just logs
 
 Connect from Valheim client via `Add Server by IP`:
 - IP: the `nlb_dns_name` from Pulumi outputs (resolves to NLB public IP)
-- Port: 2456
+- Port: <GAME_UDP_START>
 
 ## Daily ops
 
