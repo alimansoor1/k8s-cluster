@@ -1,23 +1,14 @@
-# Cilium config for Talos + kube-proxy replacement.
-# See https://docs.cilium.io/en/stable/installation/k8s-install-helm/
-
-cluster:
-  name: valheim
-  id: 1
-
 ipam:
   mode: kubernetes
-
 kubeProxyReplacement: true
-k8sServiceHost: REPLACE_WITH_CP_EIP   # set to your CP EIP
-k8sServicePort: 6443
-
-# Cilium needs these on Talos
+k8sServiceHost: 127.0.0.1
+k8sServicePort: 7445
 cgroup:
   autoMount:
     enabled: false
   hostRoot: /sys/fs/cgroup
-
+bpf:
+  mount: /sys/fs/bpf
 securityContext:
   capabilities:
     ciliumAgent:
@@ -36,13 +27,5 @@ securityContext:
       - NET_ADMIN
       - SYS_ADMIN
       - SYS_RESOURCE
-
-operator:
-  replicas: 1   # single AZ — one replica is fine
-
 hubble:
-  enabled: true
-  relay:
-    enabled: true
-  ui:
-    enabled: false   # enable later if you want the dashboard
+  enabled: false

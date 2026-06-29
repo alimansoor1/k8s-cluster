@@ -3,7 +3,7 @@
 cluster:
   apiServer:
     certSANs:
-      - REPLACE_WITH_CP_EIP   # so the cert is valid for kubectl access via EIP
+      - 52.77.176.137   # so the cert is valid for kubectl access via EIP
   proxy:
     disabled: true            # Cilium will replace kube-proxy
   network:
