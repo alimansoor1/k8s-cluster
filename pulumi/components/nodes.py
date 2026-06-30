@@ -72,6 +72,16 @@ class ControlPlane(pulumi.ComponentResource):
                 name=instance_profile_name,
             ),
             vpc_security_group_ids=security_group_ids,
+            block_device_mappings=[
+                aws.ec2.LaunchTemplateBlockDeviceMappingArgs(
+                    device_name="/dev/xvda",
+                    ebs=aws.ec2.LaunchTemplateBlockDeviceMappingEbsArgs(
+                        volume_size=20,
+                        volume_type="gp3",
+                        delete_on_termination="true",
+                    ),
+                ),
+            ],
             metadata_options=aws.ec2.LaunchTemplateMetadataOptionsArgs(
                 http_endpoint="enabled",
                 http_tokens="required",  # IMDSv2 only
@@ -174,6 +184,16 @@ class Worker(pulumi.ComponentResource):
                 name=instance_profile_name,
             ),
             vpc_security_group_ids=security_group_ids,
+            block_device_mappings=[
+                aws.ec2.LaunchTemplateBlockDeviceMappingArgs(
+                    device_name="/dev/xvda",
+                    ebs=aws.ec2.LaunchTemplateBlockDeviceMappingEbsArgs(
+                        volume_size=50,
+                        volume_type="gp3",
+                        delete_on_termination="true",
+                    ),
+                ),
+            ],
             metadata_options=aws.ec2.LaunchTemplateMetadataOptionsArgs(
                 http_endpoint="enabled",
                 http_tokens="required",
