@@ -16,7 +16,7 @@ class DlmSnapshotPolicy(pulumi.ComponentResource):
             description="Daily snapshots of Valheim world saves",
             execution_role_arn=aws.iam.get_role(name="AWSDataLifecycleManagerDefaultRole").arn,
             state="ENABLED",
-            policy_details=aws.dlm.LifecyclePolicyPolicyDetailsArgs(
+            policy_details=[aws.dlm.LifecyclePolicyPolicyDetailsArgs(
                 resource_types=["VOLUME"],
                 target_tags={"Role": "worker"},
                 schedules=[
@@ -34,7 +34,7 @@ class DlmSnapshotPolicy(pulumi.ComponentResource):
                         copy_tags=True,
                     ),
                 ],
-            ),
+            )],
             tags={**tags, "Name": f"{name}-dlm-policy"},
             opts=pulumi.ResourceOptions(parent=self),
         )
