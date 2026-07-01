@@ -120,10 +120,10 @@ worker = Worker(
 
 
 # === 8. DLM Snapshot Policy ===
-dlm = DlmSnapshotPolicy(
-    "valheim-dlm",
-    tags=tags,
-)
+# dlm = DlmSnapshotPolicy(
+#     "valheim-dlm",
+#     tags=tags,
+# )
 
 # === 9. GitHub Actions OIDC for Pulumi ===
 github_oidc = GitHubActionsOIDC(
