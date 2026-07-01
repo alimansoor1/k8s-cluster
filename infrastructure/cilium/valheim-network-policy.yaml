@@ -1,0 +1,31 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: valheim-ingress
+  namespace: valheim
+spec:
+  endpointSelector:
+    matchLabels:
+      app: valheim
+  ingress:
+    - fromCIDR:
+        - 0.0.0.0/0
+      toPorts:
+        - ports:
+            - port: "2456"
+              protocol: UDP
+            - port: "2457"
+              protocol: UDP
+            - port: "2458"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+    - toCIDR:
+        - 0.0.0.0/0
