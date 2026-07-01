@@ -15,6 +15,8 @@ from components.network import Network
 from components.nodes import ControlPlane, Worker
 from components.security_groups import SecurityGroups
 from components.dlm_snapshot import DlmSnapshotPolicy
+from components.github_actions_oidc import GitHubActionsOIDC
+from components.talosconfig_sync import TalosConfigSync
 # from components.nlb import GameNlb
 
 config = pulumi.Config()
@@ -120,6 +122,22 @@ worker = Worker(
 # === 8. DLM Snapshot Policy ===
 dlm = DlmSnapshotPolicy(
     "valheim-dlm",
+    tags=tags,
+)
+
+# === 9. GitHub Actions OIDC for Pulumi ===
+github_oidc = GitHubActionsOIDC(
+    "valheim-github",
+    github_org="alimansoor1",
+    github_repo="k8s-cluster",
+    tags=tags,
+)
+
+# === 10. Talosconfig Auto-Sync Lambda ===
+talosconfig_sync = TalosConfigSync(
+    "valheim-talosconfig",
+    bucket_name="valheim-talosconfig-bucket",  # TODO: create S3 bucket or use existing
+    talosconfig_key="talosconfig",
     tags=tags,
 )
 

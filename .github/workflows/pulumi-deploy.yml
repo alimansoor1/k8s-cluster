@@ -1,0 +1,58 @@
+name: Pulumi Deploy
+
+on:
+  push:
+    branches: [main]
+    paths: ['pulumi/**', '.github/workflows/pulumi-deploy.yml']
+  pull_request:
+    branches: [main]
+    paths: ['pulumi/**']
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  preview:
+    name: Preview
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: pulumi/actions@v5
+        with: {command: version}
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-pulumi-role
+          aws-region: ap-southeast-1
+      - uses: pulumi/actions@v5
+        with:
+          command: preview
+          stack-name: prod
+          work-dir: pulumi/stacks/prod
+        env:
+          PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: pulumi/actions@v5
+        with: {command: version}
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-pulumi-role
+          aws-region: ap-southeast-1
+      - uses: pulumi/actions@v5
+        with:
+          command: up
+          stack-name: prod
+          work-dir: pulumi/stacks/prod
+        env:
+          PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}

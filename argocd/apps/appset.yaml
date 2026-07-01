@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: valheim-apps
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - name: infrastructure
+            path: argocd/apps/infrastructure.yaml
+            namespace: argocd
+          - name: valheim
+            path: argocd/apps/valheim.yaml
+            namespace: argocd
+  template:
+    metadata:
+      name: '{{name}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/alimansoor1/k8s-cluster.git
+        targetRevision: main
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
