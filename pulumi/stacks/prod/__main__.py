@@ -14,6 +14,7 @@ from components.lambda_eip import EipReattachLambda
 from components.network import Network
 from components.nodes import ControlPlane, Worker
 from components.security_groups import SecurityGroups
+from components.dlm_snapshot import DlmSnapshotPolicy
 # from components.nlb import GameNlb
 
 config = pulumi.Config()
@@ -115,6 +116,12 @@ worker = Worker(
 #     tags=tags,
 # )
 
+
+# === 8. DLM Snapshot Policy ===
+dlm = DlmSnapshotPolicy(
+    "valheim-dlm",
+    tags=tags,
+)
 
 # === Outputs ===
 pulumi.export("vpc_id", network.vpc.id)
