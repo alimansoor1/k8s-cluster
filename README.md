@@ -79,3 +79,4 @@ just costs       # show current AWS spend estimate
 ## Editor
 
 This repo is designed for **Neovim + Zellij**. See `docs/neovim-setup.md` for the recommended plugin and LSP config (`pyright`, `ruff`, `yamlls`, `helm-ls`, `terraform-ls`-equivalent for Pulumi).
+
