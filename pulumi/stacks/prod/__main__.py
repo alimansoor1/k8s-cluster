@@ -9,14 +9,15 @@ import pulumi
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from components.dlm_snapshot import DlmSnapshotPolicy
+from components.github_actions_oidc import GitHubActionsOIDC
 from components.iam import EC2InstanceRoles
 from components.lambda_eip import EipReattachLambda
 from components.network import Network
 from components.nodes import ControlPlane, Worker
 from components.security_groups import SecurityGroups
-from components.dlm_snapshot import DlmSnapshotPolicy
-from components.github_actions_oidc import GitHubActionsOIDC
 from components.talosconfig_sync import TalosConfigSync
+
 # from components.nlb import GameNlb
 
 config = pulumi.Config()
@@ -38,9 +39,7 @@ UDP_START = int(config.require("valheim_udp_start"))
 UDP_END = int(config.require("valheim_udp_end"))
 
 if ADMIN_CIDR.startswith("REPLACE_ME"):
-    raise pulumi.RunError(
-        "admin_cidr is not set. Run: pulumi config set admin_cidr <your-ip>/32"
-    )
+    raise pulumi.RunError("admin_cidr is not set. Run: pulumi config set admin_cidr <your-ip>/32")
 if TALOS_AMI.startswith("REPLACE_ME"):
     raise pulumi.RunError(
         "talos_ami_id is not set. See talos/scripts/import-ami.sh, then run: "

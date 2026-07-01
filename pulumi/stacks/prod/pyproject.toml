@@ -25,5 +25,6 @@ ignore = ["E501"]  # line length handled by formatter
 
 [tool.pyright]
 include = ["."]
+extraPaths = ["../.."]
 pythonVersion = "3.11"
 typeCheckingMode = "standard"

@@ -6,7 +6,7 @@ on:
     paths: ['pulumi/**', '.github/workflows/pulumi-deploy.yml']
   pull_request:
     branches: [main]
-    paths: ['pulumi/**']
+    paths: ['pulumi/**', '.github/workflows/pulumi-deploy.yml']
 
 permissions:
   id-token: write
@@ -19,12 +19,30 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
       - uses: actions/setup-python@v5
-        with: {python-version: '3.12'}
+        with:
+          python-version: '3.12'
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-pulumi-role
           aws-region: ap-southeast-1
+      - name: Generate Pulumi.prod.yaml from template
+        run: |
+          sed -e "s|AWS_REGION_HERE|${{ secrets.AWS_REGION || 'ap-southeast-1' }}|g" \
+              -e "s|AWS_AZ_HERE|${{ secrets.AWS_AZ || 'ap-southeast-1a' }}|g" \
+              -e "s|ADMIN_IP_HERE|${{ secrets.ADMIN_IP || '115.147.35.78' }}|g" \
+              -e "s|VPC_CIDR_HERE|${{ secrets.VPC_CIDR || '10.0.0.0/16' }}|g" \
+              -e "s|PUBLIC_SUBNET_CIDR_HERE|${{ secrets.PUBLIC_SUBNET_CIDR || '10.0.1.0/24' }}|g" \
+              -e "s|PRIVATE_SUBNET_CIDR_HERE|${{ secrets.PRIVATE_SUBNET_CIDR || '10.0.2.0/24' }}|g" \
+              -e "s|INSTANCE_TYPE_HERE|${{ secrets.INSTANCE_TYPE || 't3.medium' }}|g" \
+              -e "s|AMI_ID_HERE|${{ secrets.TALOS_AMI_ID || 'ami-0051a52499cae01fd' }}|g" \
+              -e "s|GAME_UDP_START_HERE|${{ secrets.GAME_UDP_START || '2456' }}|g" \
+              -e "s|GAME_UDP_END_HERE|${{ secrets.GAME_UDP_END || '2458' }}|g" \
+              pulumi/stacks/prod/Pulumi.prod.yaml.template > pulumi/stacks/prod/Pulumi.prod.yaml
       - uses: pulumi/actions@v5
         with:
           command: preview
@@ -40,12 +58,30 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
       - uses: actions/setup-python@v5
-        with: {python-version: '3.12'}
+        with:
+          python-version: '3.12'
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-pulumi-role
           aws-region: ap-southeast-1
+      - name: Generate Pulumi.prod.yaml from template
+        run: |
+          sed -e "s|AWS_REGION_HERE|${{ secrets.AWS_REGION || 'ap-southeast-1' }}|g" \
+              -e "s|AWS_AZ_HERE|${{ secrets.AWS_AZ || 'ap-southeast-1a' }}|g" \
+              -e "s|ADMIN_IP_HERE|${{ secrets.ADMIN_IP || '115.147.35.78' }}|g" \
+              -e "s|VPC_CIDR_HERE|${{ secrets.VPC_CIDR || '10.0.0.0/16' }}|g" \
+              -e "s|PUBLIC_SUBNET_CIDR_HERE|${{ secrets.PUBLIC_SUBNET_CIDR || '10.0.1.0/24' }}|g" \
+              -e "s|PRIVATE_SUBNET_CIDR_HERE|${{ secrets.PRIVATE_SUBNET_CIDR || '10.0.2.0/24' }}|g" \
+              -e "s|INSTANCE_TYPE_HERE|${{ secrets.INSTANCE_TYPE || 't3.medium' }}|g" \
+              -e "s|AMI_ID_HERE|${{ secrets.TALOS_AMI_ID || 'ami-0051a52499cae01fd' }}|g" \
+              -e "s|GAME_UDP_START_HERE|${{ secrets.GAME_UDP_START || '2456' }}|g" \
+              -e "s|GAME_UDP_END_HERE|${{ secrets.GAME_UDP_END || '2458' }}|g" \
+              pulumi/stacks/prod/Pulumi.prod.yaml.template > pulumi/stacks/prod/Pulumi.prod.yaml
       - uses: pulumi/actions@v5
         with:
           command: up
