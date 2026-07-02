@@ -1,4 +1,70 @@
-# Ignore accidental command artifacts
+# Pulumi
+**/.pulumi/
+**/Pulumi.*.yaml.bak
+**/pulumi-debug.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.uv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Talos — generated machine configs CONTAIN SECRETS, never commit
+talos/_out/
+talos/secrets/
+talos/controlplane.yaml
+talos/worker.yaml
+talos/talosconfig
+talos/clusterconfig/
+talos/console.log
+talos/talconfig.yaml
+talos/talos/
+
+# kubeconfig — contains credentials
+kubeconfig
+*.kubeconfig
+kubeconfig.bak
+
+# Argo CD
+argocd-initial-password.txt
+
+# Helm
+charts/*.tgz
+
+# Editor / OS
+.DS_Store
+*.swp
+*.swo
+.vscode/
+.idea/
+*.bak
+
+# Secrets — generic catch-all
+*.pem
+*.key
+secrets/
+.env
+.env.*
+!.env.example
+
+# direnv
+.envrc
+!.envrc.example
+
+# Pulumi stack config with secrets (encryptionsalt)
+# NOTE: Pulumi.prod.yaml contains encryptionsalt — do not commit unless using ESC
+pulumi/stacks/prod/Pulumi.prod.yaml
+
+# Accidental command artifacts (from pasting AWS CLI commands)
 --query
 --associate-public-ip-address
 dashboard
@@ -6,3 +72,9 @@ userdata.b64
 userdata.yaml
 --latest
 service
+
+# Admin keys
+admin.key
+ca.key
+talos/talsecret.yaml
+talos/talsecret.yaml

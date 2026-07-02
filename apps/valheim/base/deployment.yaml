@@ -2,100 +2,128 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: valheim-server
-  namespace: valheim
-  labels:
-    app: valheim
+name: valheim-server
+namespace: valheim
+labels:
+app: valheim
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: valheim
-  template:
-    metadata:
-      labels:
-        app: valheim
-    spec:
-      nodeSelector:
-        workload: valheim
-      containers:
-      - name: valheim
-        image: ghcr.io/lloesche/valheim-plus:v0.9.15
-        ports:
-        - containerPort: 2456
-          name: game-udp
-          protocol: UDP
-        - containerPort: 2457
-          name: query-udp
-          protocol: UDP
-        - containerPort: 2458
-          name: query-tcp
-          protocol: TCP
-        env:
-        - name: SERVER_NAME
-          value: Valheim AWS
-        - name: WORLD_NAME
-          value: ValheimWorld
-        - name: SERVER_PASS
-          valueFrom:
-            secretKeyRef:
-              name: valheim-secrets
-              key: server-password
-        - name: SERVER_PUBLIC
-          value: "true"
-        - name: UPDATE_INTERVAL
-          value: "10800"
-        - name: BACKUPS_INTERVAL
-          value: "3600"
-        - name: BACKUPS_DIRECTORY
-          value: /config/backups
-        - name: BACKUPS_MAX_AGE
-          value: "3"
-        - name: BACKUPS_MAX_COUNT
-          value: "0"
-        - name: BEPINEX
-          value: "true"
-        volumeMounts:
-        - name: config
-          mountPath: /config
-        resources:
-          requests:
-            memory: 4Gi
-            cpu: "2"
-          limits:
-            memory: 8Gi
-            cpu: "4"
-        livenessProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -c
-            - "ps aux | grep -q '[v]alheim-server'"
-          initialDelaySeconds: 120
-          periodSeconds: 30
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -c
-            - "test -f /config/worlds/ValheimWorld.fwl"
-          initialDelaySeconds: 60
-          periodSeconds: 15
-          timeoutSeconds: 5
-          failureThreshold: 5
-        startupProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -c
-            - "ps aux | grep -q '[v]alheim-server'"
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 30
+replicas: 1
+strategy:
+type: Recreate
+selector:
+matchLabels:
+app: valheim
+template:
+metadata:
+labels:
+app: valheim
+spec:
+nodeSelector:
+workload: valheim
+securityContext:
+runAsUser: 111
+runAsGroup: 111
+fsGroup: 111
+runAsNonRoot: true
+seccompProfile:
+type: RuntimeDefault
+containers:
+- name: valheim
+image: ghcr.io/lloesche/valheim-plus:v0.9.15
+imagePullPolicy: Always
+ports:
+- containerPort: 2456
+name: game-udp
+protocol: UDP
+- containerPort: 2457
+name: query-udp
+protocol: UDP
+- containerPort: 2458
+name: query-tcp
+protocol: TCP
+env:
+- name: SERVER_NAME
+value: Valheim AWS
+- name: WORLD_NAME
+value: ValheimWorld
+- name: SERVER_PASS
+valueFrom:
+secretKeyRef:
+name: valheim-secrets
+key: server-password
+- name: SERVER_PUBLIC
+value: "true"
+- name: UPDATE_INTERVAL
+value: "10800"
+- name: BACKUPS_INTERVAL
+value: "3600"
+- name: BACKUPS_DIRECTORY
+value: /config/backups
+- name: BACKUPS_MAX_AGE
+value: "3"
+- name: BACKUPS_MAX_COUNT
+value: "0"
+- name: BEPINEX
+value: "true"
+- name: PUID
+value: "111"
+- name: PGID
+value: "111"
+securityContext:
+allowPrivilegeEscalation: false
+readOnlyRootFilesystem: false
+capabilities:
+drop:
+- ALL
+add:
+- NET_BIND_SERVICE
+volumeMounts:
+- name: config
+mountPath: /config
+- name: tmp
+mountPath: /tmp
+resources:
+requests:
+memory: 4Gi
+cpu: "2"
+limits:
+memory: 8Gi
+cpu: "4"
+livenessProbe:
+exec:
+command:
+- /bin/sh
+- -c
+- "ps aux | grep -q '[v]alheim-server'"
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - "test -f /config/worlds/ValheimWorld.fwl"
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 5
+          startupProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - "ps aux | grep -q '[v]alheim-server'"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
       volumes:
-      - name: config
-        persistentVolumeClaim:
-          claimName: valheim-config
+        - name: config
+          persistentVolumeClaim:
+            claimName: valheim-config
+        - name: tmp
+          emptyDir:
+            medium: Memory
+            sizeLimit: 100Mi
