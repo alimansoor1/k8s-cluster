@@ -6,7 +6,7 @@ metadata:
 spec:
   replicas: 1
   strategy:
-    type: Recreate   # only one pod owns the world file at a time
+    type: Recreate
   selector:
     matchLabels:
       app: valheim-world-1
@@ -18,14 +18,22 @@ spec:
       serviceAccountName: valheim-world-1
       nodeSelector:
         workload: valheim
-      securityContext:
-
-
-        fsGroup: 1000
       containers:
         - name: valheim
           image: lloesche/valheim-server:latest
           imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            capabilities:
+              add:
+                - CHOWN
+                - SETGID
+                - SETUID
+                - DAC_OVERRIDE
+                - FOWNER
+                - SYS_ADMIN
+                - NET_ADMIN
           ports:
             - name: game
               containerPort: 2456
@@ -65,16 +73,6 @@ spec:
               port: 2456
             initialDelaySeconds: 300
             periodSeconds: 30
-          securityContext:
-            capabilities:
-              add:
-                - CHOWN
-                - SETGID
-                - SETUID
-                - DAC_OVERRIDE
-                - FOWNER
-                - SYS_ADMIN
-                - NET_ADMIN
           readinessProbe:
             tcpSocket:
               port: 2456
