@@ -65,6 +65,16 @@ spec:
               port: 2456
             initialDelaySeconds: 300
             periodSeconds: 30
+          securityContext:
+            capabilities:
+              add:
+                - CHOWN
+                - SETGID
+                - SETUID
+                - DAC_OVERRIDE
+                - FOWNER
+                - SYS_ADMIN
+                - NET_ADMIN
           readinessProbe:
             tcpSocket:
               port: 2456
